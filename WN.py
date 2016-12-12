@@ -1,11 +1,11 @@
 import requests
 import json
-import urllib.request
+import urllib
 import os
 import subprocess
 import time
 
-from urllib import request
+import urllib2
 
 def internet_on():
     try:
@@ -22,13 +22,13 @@ def createFolder():
         os.makedirs('Image')
 
 def downloadVideo(link, name) :
-    mp3file = urllib.request.urlopen(link)
+    mp3file = urllib.urlopen(link)
     with open("Video/" + name + ".mp4", 'wb') as output:
         output.write(mp3file.read())
 
 def downloadImage(link, name) :
     a = 1
-    urllib.request.urlretrieve(link, "Image/" + name + ".jpg")
+    urllib.urlretrieve(link, "Image/" + name + ".jpg")
 
 def batch() :
     url  = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device/get-device"
