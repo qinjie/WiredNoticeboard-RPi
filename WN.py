@@ -5,6 +5,7 @@ import os
 import subprocess
 import time
 import shutil
+import pygame
 
 
 
@@ -89,6 +90,16 @@ def downloadData(data) :
             else:
                 downloadVideo(link, name)
 
+def blackScreen():
+    pygame.init()
+    pygame.mouse.set_visible(False)
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    screen.fill((0, 0, 0))
+    
+def removeFile():
+    shutil.rmtree('Temp/Video')
+    shutil.rmtree('Temp/Image')
+
 def batch() :
     url  = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device/get-device"
     token = getSerial.getserial()
@@ -108,22 +119,25 @@ def batch() :
         get_response = requests.get(url, data=post_data, headers=headers)
         data = json.loads(get_response.text)
         downloadData(data)
+        removeFile()
         for a in data :
             iteration = a['iteration']
             mediaFile = a['mediaFile']
             name = mediaFile['name']
             extension = mediaFile['extension']
             for i in range(0, iteration) :
+                blackScreen()
                 if extension == 'jpg':
-                    subprocess.call(["fbi", "-a", "-T", "1", "Data/Image/" + name + ".jpg"])
+                    subprocess.call(["fbi", "-a", "-T", "2", "Data/Image/" + name + ".jpg"])
                     time.sleep(5)
                     subprocess.call(["pkill", "fbi"])
                 else :
+                    print "1" + name
                     subprocess.call(["omxplayer", "Data/Video/" + name + ".mp4"])
 
 if __name__ == "__main__" :
-    createFolder()
-    prepareFile()
-    batch()
-    # while (1) :
-    #     batch()
+    
+    while (1) :
+        createFolder()
+        prepareFile()
+        batch()
