@@ -7,13 +7,14 @@ import time
 import shutil
 
 
+
 import getSerial
 
 def internet_on():
     try:
-        requests.urlopen('http://128.199.93.67', timeout=1)
+        request.urlopen('http://128.199.93.67', timeout=1)
         return True
-    except requests.URLError as err:
+    except request.URLError as err:
         return False
 
 def createFolder():
@@ -114,13 +115,15 @@ def batch() :
             extension = mediaFile['extension']
             for i in range(0, iteration) :
                 if extension == 'jpg':
-                    subprocess.call(["fbi", "-a", "-T", "1", "Image/" + name + ".jpg"])
+                    subprocess.call(["fbi", "-a", "-T", "1", "Data/Image/" + name + ".jpg"])
                     time.sleep(5)
+                    subprocess.call(["pkill", "fbi"])
                 else :
-                    subprocess.call(["omxplayer", "Video/" + name + ".mp4"])
+                    subprocess.call(["omxplayer", "Data/Video/" + name + ".mp4"])
 
 if __name__ == "__main__" :
     createFolder()
     prepareFile()
+    batch()
     # while (1) :
     #     batch()
