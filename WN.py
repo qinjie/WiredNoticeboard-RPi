@@ -91,16 +91,24 @@ def downloadData(data) :
                 downloadVideo(link, name)
 
 def blackScreen():
-    pygame.init()
     pygame.mouse.set_visible(False)
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    pygame.display.flip()
     screen.fill((0, 0, 0))
+ #   for event in pygame.event.get():
+  #      if event.type == pygame.QUIT :
+   #         pygame.quit()
+    #    elif event.type == pygame.KEYDOWN :
+     #       if event.key == pygame.K_ESCAPE :
+      #          pygame.quit()
+    
     
 def removeFile():
     shutil.rmtree('Temp/Video')
     shutil.rmtree('Temp/Image')
 
 def batch() :
+   
     url  = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device/get-device"
     token = getSerial.getserial()
     post_data = {'token': token}
@@ -112,7 +120,7 @@ def batch() :
         print(data)
         auth = "Bearer " + data['token']
         device_id = data['device_id']
-        print(auth)
+        #print(auth)
         url = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device-media/get-media"
         headers = {'Authorization': '%s' % auth}
         post_data = {'device_id' : device_id}
@@ -126,18 +134,22 @@ def batch() :
             name = mediaFile['name']
             extension = mediaFile['extension']
             for i in range(0, iteration) :
-                blackScreen()
                 if extension == 'jpg':
-                    subprocess.call(["fbi", "-a", "-T", "2", "Data/Image/" + name + ".jpg"])
-                    time.sleep(5)
-                    subprocess.call(["pkill", "fbi"])
+                    subprocess.call(["fbi", "-noverbose", "-a", "-1", "-T", "2", "-once", "Data/Image/" + name + ".jpg"])
+                    time.sleep(3)
+                    #subprocess.call(["pkill", "fbi"])
+                    #os.system('pkill fbi >/dev/null 2>/dev/null')
+                    time.sleep(0.3)
                 else :
-                    print "1" + name
+         #           print "1" + name
                     subprocess.call(["omxplayer", "Data/Video/" + name + ".mp4"])
+            blackScreen()
 
 if __name__ == "__main__" :
-    
-    while (1) :
+    pygame.init()
+    blackScreen()
+    for i in range(0, 2) : 
         createFolder()
         prepareFile()
         batch()
+    
