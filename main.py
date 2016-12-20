@@ -89,7 +89,7 @@ def downloadData(data) :
         link = mediaFile['link']
         fullname = name + '.' + extension
         if extension == 'jpg' :
-            currentDirectory = 'Temp/image/' + fullname
+            currentDirectoget_filepathsry = 'Temp/image/' + fullname
             newDirectory = 'data/image/' + fullname
             if fullname in listImageName :
                 shutil.move(currentDirectory, newDirectory)
@@ -127,13 +127,16 @@ def showImagePdf(name) :
     input_file = "Data/Pdf/" + name + '.pdf'
     output_dir = "Data/Image/"
     utilsWand.pdf_to_png(input_file, output_dir)
+    
     file_list = []
     with open("file_list.txt") as f:
         for line in f:
             file_list.append(line.strip())
 
-    for file_name in file_list :
-        subprocess.call(("feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/Image" + file_name))
+    for filename in file_list : 
+        subprocess.call(["feh", "-Z", "-F", "-z", "-Y", filename])
+        time.sleep(3)
+        subprocess.call(["pkill", "feh"])
 
 def removeFile():
     shutil.rmtree('Temp/Video')
@@ -179,7 +182,7 @@ def batch() :
 if __name__ == "__main__" :
     pygame.init()
     blackScreen()
-    for i in range(0, 2) : 
+    for i in range(0, 1) : 
         createFolder()
         prepareFile()
         batch()

@@ -41,7 +41,7 @@ def pdf_to_png(input_file_path, output_dir_path, resolution=150):
             image_filename = os.path.join(output_dir_path, image_filename)
 
             img.save(filename=image_filename)
-            file.write(image_filename)
+            file.write(image_filename + "\n")
     file.close()
 
 if __name__ == "__main__" :
