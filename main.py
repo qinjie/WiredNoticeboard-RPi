@@ -24,8 +24,8 @@ def createFolder():
         os.makedirs('Data/Video')
     if not os.path.exists('Data/Image'):
         os.makedirs('Data/Image')
-    if not os.path.exists('Data/pdf') :
-        os.makedirs('Data/pdf')
+    if not os.path.exists('Data/Pdf') :
+        os.makedirs('Data/Pdf')
 
     if not os.path.exists('Temp') :
         os.makedirs('Temp')
@@ -33,8 +33,8 @@ def createFolder():
         os.makedirs('Temp/Video')
     if not os.path.exists('Temp/Image') :
         os.makedirs('Temp/Image')
-    if not os.path.exists('Temp/pdf') :
-        os.makedirs('Temp/pdf')
+    if not os.path.exists('Temp/Pdf') :
+        os.makedirs('Temp/Pdf')
 
 
 def get_filepaths(directory):
@@ -49,37 +49,37 @@ def get_filepaths(directory):
 
 def downloadVideo(link, name) :
     mp3file = urllib.urlopen(link)
-    with open("data/video/" + name + ".mp4", 'wb') as output:
+    with open("Data/Video/" + name + ".mp4", 'wb') as output:
         output.write(mp3file.read())
 
 def downloadImage(link, name) :
-    urllib.urlretrieve(link, "data/image/" + name + ".jpg")
+    urllib.urlretrieve(link, "Data/Image/" + name + ".jpg")
 
 def downloadPdf(link, name) :
-    urllib.urlretrieve(link, "Data/pdf/" + name + ".pdf")
+    urllib.urlretrieve(link, "Data/Pdf/" + name + ".pdf")
 
 def prepareFile() :
-    listVideoFile = get_filepaths('data/video')
+    listVideoFile = get_filepaths('Data/Video')
 
     for a in listVideoFile:
-        currentDirectory = 'data/video/' + a
-        newDirectory  = 'Temp/video/' + a
+        currentDirectory = 'Data/Video/' + a
+        newDirectory  = 'Temp/Video/' + a
         shutil.move(currentDirectory, newDirectory)
 
-    listImageFile = get_filepaths('data/image')
+    listImageFile = get_filepaths('Data/Image')
     for a in listImageFile:
-        currentDirectory = 'data/image/' + a
-        newDirectory = 'Temp/image/' + a
+        currentDirectory = 'Data/Image/' + a
+        newDirectory = 'Temp/Image/' + a
         shutil.move(currentDirectory, newDirectory)
 
-    listPptxFile = get_filepaths('Data/pdf')
+    listPptxFile = get_filepaths('Data/Pdf')
     for a in listPptxFile :
-        currentDirectory = 'Data/pdf/' + a
-        newDirectory = 'Temp/pdf/' + a
+        currentDirectory = 'Data/Pdf/' + a
+        newDirectory = 'Temp/Pdf/' + a
         shutil.move(currentDirectory, newDirectory)
 
 def downloadData(data) :
-    listVideoName = get_filepaths('Temp/video')
+    listVideoName = get_filepaths('Temp/Video')
     listImageName = get_filepaths('Temp/image')
     listPdfname = get_filepaths('Temp/pdf')
     for a in data :
@@ -103,8 +103,8 @@ def downloadData(data) :
             else:
                 downloadVideo(link, name)
         elif extension == 'pdf' :
-            currentDirectory = 'Temp/pdf/' + fullname
-            newDirectory = 'Data/pdf/' + fullname
+            currentDirectory = 'Temp/Pdf/' + fullname
+            newDirectory = 'Data/Pdf/' + fullname
             if fullname in listVideoName:
                 shutil.move(currentDirectory, newDirectory)
             else:
@@ -133,8 +133,8 @@ def showImagePdf() :
         subprocess.call(("feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/image" + file_name))
 
 def removeFile():
-    shutil.rmtree('Temp/video')
-    shutil.rmtree('Temp/image')
+    shutil.rmtree('Temp/Video')
+    shutil.rmtree('Temp/Image')
 
 def batch() :
    

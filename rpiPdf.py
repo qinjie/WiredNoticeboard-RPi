@@ -16,9 +16,9 @@ import shutil
 # 5. Play video files
 ####
 
-FOLDER_DOWNLOAD = "download"
-FOLDER_IMAGES = "data\image"
-fOLDER_VIDEO = "data\video"
+FOLDER_DOWNLOAD = "Data\Pdf"
+FOLDER_IMAGES = "Data\Image"
+fOLDER_VIDEO = "Data\Video"
 
 # Get file_list.txt
 # Exit if file_list.txt is the same, else proceed with following
