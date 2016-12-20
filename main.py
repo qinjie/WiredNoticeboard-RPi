@@ -176,11 +176,11 @@ def batch() :
                 if extension == 'pdf' :
                     showImagePdf(name)
 
-            blackScreen()
+           # blackScreen()
 
 if __name__ == "__main__" :
     pygame.init()
-    blackScreen()
+   # blackScreen()
     for i in range(0, 3) : 
         createFolder()
         prepareFile()
