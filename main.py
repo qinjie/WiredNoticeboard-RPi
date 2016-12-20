@@ -40,6 +40,7 @@ def createFolder():
 def get_filepaths(directory):
     file_paths = []  # List which will store all of the full filepaths.
 
+
     for root, directories, files in os.walk(directory):
         for filename in files:
 
@@ -56,6 +57,7 @@ def downloadImage(link, name) :
     urllib.urlretrieve(link, "Data/Image/" + name + ".jpg")
 
 def downloadPdf(link, name) :
+
     urllib.urlretrieve(link, "Data/Pdf/" + name + ".pdf")
 
 def prepareFile() :
@@ -74,9 +76,10 @@ def prepareFile() :
 
     listPptxFile = get_filepaths('Data/Pdf')
     for a in listPptxFile :
-        currentDirectory = 'Data/Pdf/' + a
-        newDirectory = 'Temp/Pdf/' + a
-        shutil.move(currentDirectory, newDirectory)
+        if a.endswith('.pdf') :
+            currentDirectory = 'Data/Pdf/' + a
+            newDirectory = 'Temp/Pdf/' + a
+            shutil.move(currentDirectory, newDirectory)
 
 def downloadData(data) :
     listVideoName = get_filepaths('Temp/Video')
@@ -112,8 +115,8 @@ def downloadData(data) :
 
 def blackScreen():
     pygame.mouse.set_visible(False)
-    #screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-    #screen.fill((0, 0, 0))
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    screen.fill((0, 0, 0))
     
  #   for event in pygame.event.get():
   #      if event.type == pygame.QUIT :
@@ -125,12 +128,13 @@ def blackScreen():
 
 def showImagePdf(name) :
     input_file = "Data/Pdf/" + name + '.pdf'
-    output_dir = "Data/pdf/" + name
+    output_dir = "Data/Pdf/" + name
     if not os.path.exists(output_dir) :
         os.makedirs(output_dir)
         utilsWand.pdf_to_png(input_file, output_dir)
 
-    subprocess.call(["feh", "-F", "-Y", "-D", "--slideshow-delay 2", "cycel-once", output_dir + name])
+    #subprocess.call(["feh", "-F", "-Y", "-D", "--slideshow-delay 2", "--cycle-once", output_dir])
+    os.system("feh -F,-Y, -D, --slideshow-delay 2, --cycle-once " + output_dir)
 
 def removeFile():
     shutil.rmtree('Temp/Video')
@@ -164,7 +168,8 @@ def batch() :
             extension = mediaFile['extension']
             for i in range(0, iteration) :
                 if extension == 'jpg':
-                    subprocess.call(( "feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/Image" + name + ".jpg" ))
+                    #subprocess.call(( "feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/Image/" + name + ".jpg" ))
+                    os.system("feh -F, -Y, -Z, -D, --slideshow-delay 2, --cycle-once " + "Data/Image/" + name + ".jpg")
                 if extension == 'mp4':
          #           print "1" + name
                     subprocess.call(["omxplayer", "Data/Video/" + name + ".mp4"])
@@ -176,7 +181,7 @@ def batch() :
 if __name__ == "__main__" :
     pygame.init()
     blackScreen()
-    for i in range(0, 1) : 
+    for i in range(0, 3) : 
         createFolder()
         prepareFile()
         batch()
