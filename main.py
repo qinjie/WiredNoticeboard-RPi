@@ -8,7 +8,7 @@ import shutil
 import pygame
 
 import rpiSerial
-import ultilsWand
+import utilsWand
 
 def internet_on():
     try:
@@ -126,14 +126,14 @@ def blackScreen():
 def showImagePdf(name) :
     input_file = "Data/Pdf/" + name + '.pdf'
     output_dir = "Data/Image/"
-    ultilsWand.pdf_to_png(input_file, output_dir)
+    utilsWand.pdf_to_png(input_file, output_dir)
     file_list = []
     with open("file_list.txt") as f:
         for line in f:
             file_list.append(line.strip())
 
     for file_name in file_list :
-        subprocess.call(("feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/image" + file_name))
+        subprocess.call(("feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/Image" + file_name))
 
 def removeFile():
     shutil.rmtree('Temp/Video')
@@ -167,7 +167,7 @@ def batch() :
             extension = mediaFile['extension']
             for i in range(0, iteration) :
                 if extension == 'jpg':
-                    subprocess.call(( "feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/image" + name + ".jpg" ))
+                    subprocess.call(( "feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/Image" + name + ".jpg" ))
                 if extension == 'mp4':
          #           print "1" + name
                     subprocess.call(["omxplayer", "Data/Video/" + name + ".mp4"])
