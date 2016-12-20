@@ -56,7 +56,7 @@ def downloadImage(link, name) :
     urllib.urlretrieve(link, "Data/Image/" + name + ".jpg")
 
 def downloadPptx(link, name) :
-    urllib.urlretrieve(link, "Data/pptx/" + name + ".pptx")
+    urllib.urlretrieve(link, "Data/pptx/" + name + ".odp")
 
 def prepareFile() :
     listVideoFile = get_filepaths('Data/Video')
@@ -101,19 +101,19 @@ def downloadData(data) :
                 shutil.move(currentDirectory, newDirectory)
             else:
                 downloadVideo(link, name)
-        elif extension == 'pptx' :
+        elif extension == 'odp' :
             currentDirectory = 'Temp/pptx/' + fullname
             newDirectory = 'Data/pptx/' + fullname
             if fullname in listVideoName:
                 shutil.move(currentDirectory, newDirectory)
             else:
-                downloadVideo(link, name)
+                downloadPptx(link, name)
 
 def blackScreen():
     pygame.mouse.set_visible(False)
-    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-    pygame.display.flip()
-    screen.fill((0, 0, 0))
+    #screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    #screen.fill((0, 0, 0))
+    
  #   for event in pygame.event.get():
   #      if event.type == pygame.QUIT :
    #         pygame.quit()
@@ -159,9 +159,11 @@ def batch() :
                     #subprocess.call(["pkill", "fbi"])
                     #os.system('pkill fbi >/dev/null 2>/dev/null')
                     time.sleep(0.3)
-                else :
+                if extension == 'mp4':
          #           print "1" + name
                     subprocess.call(["omxplayer", "Data/Video/" + name + ".mp4"])
+                if extension == 'odp' :
+                    subprocess.call(["libreoffice", "--show", "Data/pptx/" + name + ".odp"])
             blackScreen()
 
 if __name__ == "__main__" :
