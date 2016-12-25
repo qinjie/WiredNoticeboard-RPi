@@ -144,7 +144,7 @@ def batch() :
    
     url  = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device/get-device"
     token = rpiSerial.getserial()
-    post_data = {'token': token}
+    post_data = {'mac': token}
     get_response = requests.post(url=url, data=post_data)
     data = json.loads(get_response.text)
     if (get_response.text == '-1') :
@@ -154,10 +154,10 @@ def batch() :
         auth = "Bearer " + data['token']
         device_id = data['device_id']
         #print(auth)
-        url = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device-media/get-media"
+        url = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device-media/list-media"
         headers = {'Authorization': '%s' % auth}
         post_data = {'device_id' : device_id}
-        get_response = requests.get(url, data=post_data, headers=headers)
+        get_response = requests.get(url, headers=headers)
         data = json.loads(get_response.text)
         downloadData(data)
         removeFile()
@@ -181,7 +181,7 @@ def batch() :
 if __name__ == "__main__" :
     pygame.init()
    # blackScreen()
-    for i in range(0, 3) : 
+    for i in range(0, 3000) : 
         createFolder()
         prepareFile()
         batch()
