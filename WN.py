@@ -49,17 +49,17 @@ def batch() :
         get_response = requests.get(url, data=post_data, headers=headers)
         data = json.loads(get_response.text)
         for a in data :
+            iteration = a['iteration']
             mediaFile = a['mediaFile']
             name = mediaFile['name']
             extension = mediaFile['extension']
-            duration = mediaFile['duration']
             link = mediaFile['link']
             if extension == 'jpg' :
                 downloadImage(link, name)
             else:
                 downloadVideo(link, name)
 
-            for i in range(0, duration) :
+            for i in range(0, iteration) :
                 if extension == 'jpg':
                     subprocess.call(["fbi", "-a", "-T", "1", "Image/" + name + ".jpg"])
                     time.sleep(5)
