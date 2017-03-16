@@ -4,9 +4,9 @@ import urllib
 import os
 import subprocess
 import time
-
 import urllib2
 
+import getSerial
 def internet_on():
     try:
         request.urlopen('http://128.199.93.67', timeout=1)
@@ -32,7 +32,8 @@ def downloadImage(link, name) :
 
 def batch() :
     url  = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device/get-device"
-    post_data = {'token': 'abc'}
+    token = getSerial.getserial()
+    post_data = {'token': token}
     get_response = requests.post(url=url, data=post_data)
     data = json.loads(get_response.text)
     if (get_response.text == '-1') :
