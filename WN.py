@@ -25,6 +25,8 @@ def createFolder():
         os.makedirs('Data/Video')
     if not os.path.exists('Data/Image'):
         os.makedirs('Data/Image')
+    if not os.path.exists('Data/pptx') :
+        os.makedirs('Data/pptx')
 
     if not os.path.exists('Temp') :
         os.makedirs('Temp')
@@ -32,6 +34,8 @@ def createFolder():
         os.makedirs('Temp/Video')
     if not os.path.exists('Temp/Image') :
         os.makedirs('Temp/Image')
+    if not os.path.exists('Temp/pptx') :
+        os.makedirs('Temp/pptx')
 
 def get_filepaths(directory):
     file_paths = []  # List which will store all of the full filepaths.
@@ -49,8 +53,10 @@ def downloadVideo(link, name) :
         output.write(mp3file.read())
 
 def downloadImage(link, name) :
-    a = 1
     urllib.urlretrieve(link, "Data/Image/" + name + ".jpg")
+
+def downloadPptx(link, name) :
+    urllib.urlretrieve(link, "Data/pptx/" + name + ".pptx")
 
 def prepareFile() :
     listVideoFile = get_filepaths('Data/Video')
@@ -64,6 +70,12 @@ def prepareFile() :
     for a in listImageFile:
         currentDirectory = 'Data/Image/' + a
         newDirectory = 'Temp/Image/' + a
+        shutil.move(currentDirectory, newDirectory)
+
+    listPptxFile = get_filepaths('Data/pptx')
+    for a in listPptxFile :
+        currentDirectory = 'Data/pptx/' + a
+        newDirectory = 'Temp/pptx/' + a
         shutil.move(currentDirectory, newDirectory)
 
 def downloadData(data) :
@@ -82,9 +94,16 @@ def downloadData(data) :
                 shutil.move(currentDirectory, newDirectory)
             else :
                 downloadImage(link, name)
-        else :
+        elif extension == 'mp4' :
             currentDirectory = 'Temp/Video/' + fullname
             newDirectory = 'Data/Video/' + fullname
+            if fullname in listVideoName:
+                shutil.move(currentDirectory, newDirectory)
+            else:
+                downloadVideo(link, name)
+        elif extension == 'pptx' :
+            currentDirectory = 'Temp/pptx/' + fullname
+            newDirectory = 'Data/pptx/' + fullname
             if fullname in listVideoName:
                 shutil.move(currentDirectory, newDirectory)
             else:
