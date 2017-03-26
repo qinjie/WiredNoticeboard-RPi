@@ -7,31 +7,29 @@ import time
 import shutil
 import pygame
 
-
-
-import getSerial
+import rpiSerial
 
 def internet_on():
     try:
-        request.urlopen('http://128.199.93.67', timeout=1)
+        requests.urlopen('http://128.199.93.67', timeout=1)
         return True
-    except request.URLError as err:
+    except requests.URLError as err:
         return False
 
 def createFolder():
-    if not os.path.exists('Data') :
-        os.makedirs('Data')
-    if not os.path.exists('Data/Video'):
-        os.makedirs('Data/Video')
-    if not os.path.exists('Data/Image'):
-        os.makedirs('Data/Image')
+    if not os.path.exists('data') :
+        os.makedirs('data')
+    if not os.path.exists('data/video'):
+        os.makedirs('data/video')
+    if not os.path.exists('data/image'):
+        os.makedirs('data/image')
 
     if not os.path.exists('Temp') :
         os.makedirs('Temp')
-    if not os.path.exists('Temp/Video') :
-        os.makedirs('Temp/Video')
-    if not os.path.exists('Temp/Image') :
-        os.makedirs('Temp/Image')
+    if not os.path.exists('Temp/video') :
+        os.makedirs('Temp/video')
+    if not os.path.exists('Temp/image') :
+        os.makedirs('Temp/image')
 
 def get_filepaths(directory):
     file_paths = []  # List which will store all of the full filepaths.
@@ -45,30 +43,30 @@ def get_filepaths(directory):
 
 def downloadVideo(link, name) :
     mp3file = urllib.urlopen(link)
-    with open("Data/Video/" + name + ".mp4", 'wb') as output:
+    with open("data/video/" + name + ".mp4", 'wb') as output:
         output.write(mp3file.read())
 
 def downloadImage(link, name) :
     a = 1
-    urllib.urlretrieve(link, "Data/Image/" + name + ".jpg")
+    urllib.urlretrieve(link, "data/image/" + name + ".jpg")
 
 def prepareFile() :
-    listVideoFile = get_filepaths('Data/Video')
+    listVideoFile = get_filepaths('data/video')
 
     for a in listVideoFile:
-        currentDirectory = 'Data/Video/' + a
-        newDirectory  = 'Temp/Video/' + a
+        currentDirectory = 'data/video/' + a
+        newDirectory  = 'Temp/video/' + a
         shutil.move(currentDirectory, newDirectory)
 
-    listImageFile = get_filepaths('Data/Image')
+    listImageFile = get_filepaths('data/image')
     for a in listImageFile:
-        currentDirectory = 'Data/Image/' + a
-        newDirectory = 'Temp/Image/' + a
+        currentDirectory = 'data/image/' + a
+        newDirectory = 'Temp/image/' + a
         shutil.move(currentDirectory, newDirectory)
 
 def downloadData(data) :
-    listVideoName = get_filepaths('Temp/Video')
-    listImageName = get_filepaths('Temp/Image')
+    listVideoName = get_filepaths('Temp/video')
+    listImageName = get_filepaths('Temp/image')
     for a in data :
         mediaFile = a['mediaFile']
         name = mediaFile['name']
@@ -76,15 +74,15 @@ def downloadData(data) :
         link = mediaFile['link']
         fullname = name + '.' + extension
         if extension == 'jpg' :
-            currentDirectory = 'Temp/Image/' + fullname
-            newDirectory = 'Data/Image/' + fullname
+            currentDirectory = 'Temp/image/' + fullname
+            newDirectory = 'data/image/' + fullname
             if fullname in listImageName :
                 shutil.move(currentDirectory, newDirectory)
             else :
                 downloadImage(link, name)
         else :
-            currentDirectory = 'Temp/Video/' + fullname
-            newDirectory = 'Data/Video/' + fullname
+            currentDirectory = 'Temp/video/' + fullname
+            newDirectory = 'data/video/' + fullname
             if fullname in listVideoName:
                 shutil.move(currentDirectory, newDirectory)
             else:
@@ -97,12 +95,12 @@ def blackScreen():
     screen.fill((0, 0, 0))
     
 def removeFile():
-    shutil.rmtree('Temp/Video')
-    shutil.rmtree('Temp/Image')
+    shutil.rmtree('Temp/video')
+    shutil.rmtree('Temp/image')
 
 def batch() :
     url  = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device/get-device"
-    token = getSerial.getserial()
+    token = rpiSerial.getserial()
     post_data = {'token': token}
     get_response = requests.post(url=url, data=post_data)
     data = json.loads(get_response.text)
@@ -128,12 +126,12 @@ def batch() :
             for i in range(0, iteration) :
                 blackScreen()
                 if extension == 'jpg':
-                    subprocess.call(["fbi", "-a", "-T", "2", "Data/Image/" + name + ".jpg"])
+                    subprocess.call(["fbi", "-a", "-T", "2", "data/image/" + name + ".jpg"])
                     time.sleep(5)
                     subprocess.call(["pkill", "fbi"])
                 else :
                     print "1" + name
-                    subprocess.call(["omxplayer", "Data/Video/" + name + ".mp4"])
+                    subprocess.call(["omxplayer", "data/video/" + name + ".mp4"])
 
 if __name__ == "__main__" :
     
