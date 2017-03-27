@@ -125,18 +125,12 @@ def blackScreen():
 
 def showImagePdf(name) :
     input_file = "Data/Pdf/" + name + '.pdf'
-    output_dir = "Data/Image/"
-    utilsWand.pdf_to_png(input_file, output_dir)
-    
-    file_list = []
-    with open("file_list.txt") as f:
-        for line in f:
-            file_list.append(line.strip())
+    output_dir = "Data/pdf/" + name
+    if not os.path.exists(output_dir) :
+        os.makedirs(output_dir)
+        utilsWand.pdf_to_png(input_file, output_dir)
 
-    for filename in file_list : 
-        subprocess.call(["feh", "-Z", "-F", "-z", "-Y", filename])
-        time.sleep(3)
-        subprocess.call(["pkill", "feh"])
+    subprocess.call(["feh", "-F", "-Y", "-D", "--slideshow-delay 2", "cycel-once", output_dir + name])
 
 def removeFile():
     shutil.rmtree('Temp/Video')
