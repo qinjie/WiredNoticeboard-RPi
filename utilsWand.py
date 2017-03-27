@@ -26,6 +26,9 @@ def pdf_to_png(input_file_path, output_dir_path, resolution=150):
     print "Exporting PDF file to PNG images..."
 
     all_pages = Image(filename=input_file_path, resolution=resolution)
+    with open('file_list.txt', 'w'):
+        pass
+    file = open('file_list.txt', 'w')
     for i, page in enumerate(all_pages.sequence):
         with Image(page, resolution=200) as img:
             img.compression_quality = 99
@@ -38,6 +41,8 @@ def pdf_to_png(input_file_path, output_dir_path, resolution=150):
             image_filename = os.path.join(output_dir_path, image_filename)
 
             img.save(filename=image_filename)
+            file.write(image_filename)
+    file.close()
 
 if __name__ == "__main__" :
     dn = os.path.dirname(os.path.realpath(__file__))

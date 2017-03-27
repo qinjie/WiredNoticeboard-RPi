@@ -8,7 +8,7 @@ import shutil
 import pygame
 
 import rpiSerial
-import rpiPdf
+import ultilsWand
 
 def internet_on():
     try:
@@ -123,7 +123,10 @@ def blackScreen():
       #          pygame.quit()
     
 
-def showImagePdf() :
+def showImagePdf(name) :
+    input_file = "Data/Pdf/" + name + '.pdf'
+    output_dir = "Data/Image/"
+    ultilsWand.pdf_to_png(input_file, output_dir)
     file_list = []
     with open("file_list.txt") as f:
         for line in f:
@@ -169,8 +172,7 @@ def batch() :
          #           print "1" + name
                     subprocess.call(["omxplayer", "Data/Video/" + name + ".mp4"])
                 if extension == 'pdf' :
-                    rpiPdf.pdfFile()
-                    showImagePdf()
+                    showImagePdf(name)
 
             blackScreen()
 
