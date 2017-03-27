@@ -1,68 +1,184 @@
-
+import requests
+import json
+import urllib
 import os
-import utilsWand
-import utilsOther
+import subprocess
+import time
 import shutil
+import pygame
 
-####
-# This script is the main script to download slideshow files from server
-# 1. Get file list in play order into file_list.txt
-# 2. Download files into "download" folders
-# 3. For each file in file_list with index i
-# 	Get file from download folder
-# 	If it's a image file, copy to "pictures" folder and rename it as "<i>_<filename>"
-# 	If it's a pdf file, export it as images to "pictures" foder with name "<i>_<filename>_<page>"
-# 4. Run Feh with slide show
-# 5. Play video files
-####
+import rpiSerial
+import rpiPdf
 
-FOLDER_DOWNLOAD = "download"
-FOLDER_IMAGES = "data\image"
-fOLDER_VIDEO = "data\video"
+def internet_on():
+    try:
+        requests.urlopen('http://128.199.93.67', timeout=1)
+        return True
+    except requests.URLError as err:
+        return False
 
-# Get file_list.txt
-# Exit if file_list.txt is the same, else proceed with following
-#TODO
+def createFolder():
+    if not os.path.exists('Data') :
+        os.makedirs('Data')
+    if not os.path.exists('Data/Video'):
+        os.makedirs('Data/Video')
+    if not os.path.exists('Data/Image'):
+        os.makedirs('Data/Image')
+    if not os.path.exists('Data/pdf') :
+        os.makedirs('Data/pdf')
 
-
-# Download files into download folder
-# Clean up download folder before downloading
-#TODO
-
-
-# Read from file_list.txt
-file_list = []
-with open("file_list.txt") as f:
-    for line in f:
-        file_list.append(line.strip())
-
-cur_dir = os.path.dirname(os.path.realpath(__file__))
-output_path = os.path.join(cur_dir, FOLDER_IMAGES)
-
-# Clear output folder
-if os.path.exists(output_path):
-    print "Clean up output folder..."
-    flist = os.listdir(output_path)
-    for f in flist:
-        os.remove(os.path.join(output_path,f))
-
-# Process input files into output folder
-#   copy image and export pdf
-for index, file_name in enumerate(file_list):
-    new_file_name = "{0:04}_{1}".format(index, file_name)
-    print new_file_name
-    # Export PDF into images
-    input_file = os.path.join(cur_dir, FOLDER_DOWNLOAD, file_name)
-
-    if input_file.endswith('.pdf'):
-        # Export PDF to images
-        input_file2 = os.path.join(cur_dir, FOLDER_DOWNLOAD, new_file_name)
-        shutil.copy2(input_file, input_file2)
-        utilsWand.pdf_to_png(input_file2, output_path)
-        os.remove(input_file2)
-    elif utilsOther.get_image_type(input_file):
-        # Copy image to output folder
-        output_file = os.path.join(output_path, new_file_name)
-        shutil.copy2(input_file, output_file)
+    if not os.path.exists('Temp') :
+        os.makedirs('Temp')
+    if not os.path.exists('Temp/Video') :
+        os.makedirs('Temp/Video')
+    if not os.path.exists('Temp/Image') :
+        os.makedirs('Temp/Image')
+    if not os.path.exists('Temp/pdf') :
+        os.makedirs('Temp/pdf')
 
 
+def get_filepaths(directory):
+    file_paths = []  # List which will store all of the full filepaths.
+
+    for root, directories, files in os.walk(directory):
+        for filename in files:
+
+            file_paths.append(filename)  # Add it to the list.
+
+    return file_paths
+
+def downloadVideo(link, name) :
+    mp3file = urllib.urlopen(link)
+    with open("data/video/" + name + ".mp4", 'wb') as output:
+        output.write(mp3file.read())
+
+def downloadImage(link, name) :
+    urllib.urlretrieve(link, "data/image/" + name + ".jpg")
+
+def downloadPdf(link, name) :
+    urllib.urlretrieve(link, "Data/pdf/" + name + ".pdf")
+
+def prepareFile() :
+    listVideoFile = get_filepaths('data/video')
+
+    for a in listVideoFile:
+        currentDirectory = 'data/video/' + a
+        newDirectory  = 'Temp/video/' + a
+        shutil.move(currentDirectory, newDirectory)
+
+    listImageFile = get_filepaths('data/image')
+    for a in listImageFile:
+        currentDirectory = 'data/image/' + a
+        newDirectory = 'Temp/image/' + a
+        shutil.move(currentDirectory, newDirectory)
+
+    listPptxFile = get_filepaths('Data/pdf')
+    for a in listPptxFile :
+        currentDirectory = 'Data/pdf/' + a
+        newDirectory = 'Temp/pdf/' + a
+        shutil.move(currentDirectory, newDirectory)
+
+def downloadData(data) :
+    listVideoName = get_filepaths('Temp/video')
+    listImageName = get_filepaths('Temp/image')
+    listPdfname = get_filepaths('Temp/pdf')
+    for a in data :
+        mediaFile = a['mediaFile']
+        name = mediaFile['name']
+        extension = mediaFile['extension']
+        link = mediaFile['link']
+        fullname = name + '.' + extension
+        if extension == 'jpg' :
+            currentDirectory = 'Temp/image/' + fullname
+            newDirectory = 'data/image/' + fullname
+            if fullname in listImageName :
+                shutil.move(currentDirectory, newDirectory)
+            else :
+                downloadImage(link, name)
+        elif extension == 'mp4' :
+            currentDirectory = 'Temp/Video/' + fullname
+            newDirectory = 'Data/Video/' + fullname
+            if fullname in listVideoName:
+                shutil.move(currentDirectory, newDirectory)
+            else:
+                downloadVideo(link, name)
+        elif extension == 'pdf' :
+            currentDirectory = 'Temp/pdf/' + fullname
+            newDirectory = 'Data/pdf/' + fullname
+            if fullname in listVideoName:
+                shutil.move(currentDirectory, newDirectory)
+            else:
+                downloadPdf(link, name)
+
+def blackScreen():
+    pygame.mouse.set_visible(False)
+    #screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    #screen.fill((0, 0, 0))
+    
+ #   for event in pygame.event.get():
+  #      if event.type == pygame.QUIT :
+   #         pygame.quit()
+    #    elif event.type == pygame.KEYDOWN :
+     #       if event.key == pygame.K_ESCAPE :
+      #          pygame.quit()
+    
+
+def showImagePdf() :
+    file_list = []
+    with open("file_list.txt") as f:
+        for line in f:
+            file_list.append(line.strip())
+
+    for file_name in file_list :
+        subprocess.call(("feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/image" + file_name))
+
+def removeFile():
+    shutil.rmtree('Temp/video')
+    shutil.rmtree('Temp/image')
+
+def batch() :
+   
+    url  = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device/get-device"
+    token = rpiSerial.getserial()
+    post_data = {'token': token}
+    get_response = requests.post(url=url, data=post_data)
+    data = json.loads(get_response.text)
+    if (get_response.text == '-1') :
+        print('This device does not register!')
+    else :
+        print(data)
+        auth = "Bearer " + data['token']
+        device_id = data['device_id']
+        #print(auth)
+        url = "http://128.199.93.67/WiredNoticeboard-Web/api/web/index.php/v1/device-media/get-media"
+        headers = {'Authorization': '%s' % auth}
+        post_data = {'device_id' : device_id}
+        get_response = requests.get(url, data=post_data, headers=headers)
+        data = json.loads(get_response.text)
+        downloadData(data)
+        removeFile()
+        for a in data :
+            iteration = a['iteration']
+            mediaFile = a['mediaFile']
+            name = mediaFile['name']
+            extension = mediaFile['extension']
+            for i in range(0, iteration) :
+                if extension == 'jpg':
+                    subprocess.call(( "feh", "-Z", "-F", "-z", "-Y", "-D", "3", "Data/image" + name + ".jpg" ))
+                if extension == 'mp4':
+         #           print "1" + name
+                    subprocess.call(["omxplayer", "Data/Video/" + name + ".mp4"])
+                if extension == 'pdf' :
+                    rpiPdf.pdfFile()
+                    showImagePdf()
+
+            blackScreen()
+
+if __name__ == "__main__" :
+    pygame.init()
+    blackScreen()
+    for i in range(0, 2) : 
+        createFolder()
+        prepareFile()
+        batch()
+    
