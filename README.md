@@ -4,10 +4,20 @@
 # System Design
 
 
-# Setup
+# Server Setup
 
-## System Setup
+## Rasberry Pi Setup
 e.g. Python packages, wifi setup, power saving config
+### Install required softwares
+1. Install Wand from http://docs.wand-py.org/
+    ```` 
+    sudo apt-get update
+    sudo apt-get install libmagickwand-dev
+    sudo pip install Wand
+    
+    sudo pip install dropbox
+    ````
+2. 
 
 ## Project Setup
 , e.g. project folders, Crontab setup 
