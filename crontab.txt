@@ -4,15 +4,17 @@
 # This crontab job can only be setup on "crontab -e", NOT "sudo crontab -e"
 
 # Reboot at 6am
-0 6 * * * /sbin/shutdown -r +5
+30 7 * * * /sbin/shutdown -r +5
 
 # Update IP address after reboot and every hour at 30 minute
-@reboot (sleep 1m; cd /home/pi/project/ || exit 1; /usr/bin/python /home/pi/project/batch_update_ip_to_dropbox.py &)
+#@reboot (sleep 4m; cd /home/pi/project/ || exit 1; /usr/bin/python /home/pi/project/batch_update_ip_to_dropbox.py &)
+@reboot sleep 4m; env DISPLAY=:0 lxterminal -e "/bin/bash -c '/usr/bin/python /home/pi/project/batch_update_ip_to_dropbox.py'"
 30 * * * * (cd /home/pi/project/ || exit 1; /usr/bin/python /home/pi/project/batch_update_ip_to_dropbox.py &)
 
-# Fetch media files from server 2 minutes after reboot
-@reboot (sleep 2m; cd /home/pi/project/ || exit 1; /usr/bin/python /home/pi/project/batch_prepare_playlist.py &)
+# Fetch media files from server 5 minutes after reboot
+#@reboot (sleep 5m; cd /home/pi/project/ || exit 1; /usr/bin/python /home/pi/project/batch_prepare_playlist.py &)
+@reboot sleep 5m; env DISPLAY=:0 lxterminal -e "/bin/bash -c '/usr/bin/python /home/pi/project/batch_prepare_playlist.py'"
 
-# Play media files 7 minutes after reboot. The script runs in foreground
+# Play media files 15 minutes after reboot. The script runs in foreground
 #@reboot (sleep 30s; cd /home/pi/project/ || exit 1; DISPLAY=:0 /usr/bin/python /home/pi/project/batch_main.py )
-@reboot sleep 7m; env DISPLAY=:0 lxterminal -e "/bin/bash -c '/usr/bin/python /home/pi/project/batch_main.py'" 
+@reboot sleep 15m; env DISPLAY=:0 lxterminal -e "/bin/bash -c '/usr/bin/python /home/pi/project/batch_main.py'"
