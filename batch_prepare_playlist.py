@@ -133,22 +133,25 @@ for j in js:
         print url
         download_file_with_token(url, headers, file_path)
 
-# Process media list
-## Clean output image folder
-if not os.path.exists(_path_data_image):
-    os.makedirs(_path_data_image)
-else:
-    flist = os.listdir(_path_data_image)
-    for f in flist:
-        os.remove(os.path.join(_path_data_image, f))
+def clean_output_folder():
+    ## Clean output image folder
+    if not os.path.exists(_path_data_image):
+        os.makedirs(_path_data_image)
+    else:
+        flist = os.listdir(_path_data_image)
+        for f in flist:
+            os.remove(os.path.join(_path_data_image, f))
 
-## Clean output video folder
-if not os.path.exists(_path_data_video):
-    os.makedirs(_path_data_video)
-else:
-    flist = os.listdir(_path_data_video)
-    for f in flist:
-        os.remove(os.path.join(_path_data_video, f))
+    ## Clean output video folder
+    if not os.path.exists(_path_data_video):
+        os.makedirs(_path_data_video)
+    else:
+        flist = os.listdir(_path_data_video)
+        for f in flist:
+            os.remove(os.path.join(_path_data_video, f))
+
+
+clean_output_folder()
 
 # Process input files into output folder
 #   copy image and export pdf
