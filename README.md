@@ -50,3 +50,11 @@ e.g. Python packages, wifi setup, power saving config
 	If it's video file, copy it to "videos" folder
 4. Run Feh with slide show
 5. Play video files
+
+
+
+# Technical Knowledge
+
+## How to programmatically turn on and off monitor
+https://gist.github.com/simlun/1b27b14d707abbba8fc1
+

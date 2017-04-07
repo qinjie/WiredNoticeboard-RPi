@@ -6,6 +6,7 @@ import json
 import ConfigParser
 import requests
 
+
 ####
 # This script is the main script to download slideshow files from server
 # 1. Get file list in play order into file_list.txt
@@ -17,6 +18,16 @@ import requests
 # 4. Run Feh with slide show
 # 5. Play video files
 ####
+
+def read_config(filepath):
+    if not os.path.exists(filepath):
+        print 'Missing device configuration file.'
+        return {}
+    else:
+        with open(filepath, 'rb') as f:
+            str = f.read()
+            return json.loads(str)
+
 
 FOLDER_DOWNLOAD = "download"
 FOLDER_IMAGES = "data/image"
@@ -31,6 +42,7 @@ _path_data_image = os.path.join(_path_cur_dir, FOLDER_IMAGES)
 _path_data_video = os.path.join(_path_cur_dir, FOLDER_VIDEO)
 _path_download = os.path.join(_path_cur_dir, FOLDER_DOWNLOAD)
 
+
 def make_folders():
     if not os.path.exists(_path_download):
         os.makedirs(_path_download)
@@ -39,35 +51,36 @@ def make_folders():
     if not os.path.exists(_path_data_video):
         os.makedirs(_path_data_video)
 
+
 def read_ini(ini_file):
     parser = ConfigParser.SafeConfigParser()
     parser.read(ini_file)
     parser.defaults()
     base_url = parser.get('default', 'url_base')
     urls = {}
-    urls['device_enroll'] = base_url + parser.get('default','device_enroll')
-    urls['device_playlist'] = base_url + parser.get('default','device_playlist')
-    urls['device_download'] = base_url + parser.get('default','device_download_file')
+    urls['device_enroll'] = base_url + parser.get('default', 'device_enroll')
+    urls['device_playlist'] = base_url + parser.get('default', 'device_playlist')
+    urls['device_download'] = base_url + parser.get('default', 'device_download_file')
     return urls
+
 
 def download_file_with_token(url, headers, filename='temp'):
     r = requests.get(url, headers=headers, stream=True)
     if r.status_code == 200:
         with open(filename, 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024):
-                if chunk: # filter out keep-alive new chunks
+                if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
         return filename
     else:
         return None
 
 
-
 # Create folders
 make_folders()
 
 # Read server.ini file
-urls=[]
+urls = []
 if not os.path.exists(INI_FILE):
     print 'Missing server ini file.'
     exit(1)
@@ -76,17 +89,10 @@ else:
     print "URL Config: {}".format(urls)
 
 # Read device.json file
-config_json = {}
-if not os.path.exists(CONFIG_FILE):
-    print 'Missing device configuration file.'
+config_json = read_config(_file_config)
+if 'mac' not in config_json:
+    print 'Missing device mac ID in configuration file.'
     exit(1)
-else:
-    with open(_file_config, 'rb') as f:
-        str = f.read()
-        config_json = json.loads(str)
-    if 'mac' not in config_json:
-        print 'Missing device mac ID in configuration file.'
-        exit(1)
 
 # Get token if not available
 if 'token' not in config_json:
@@ -132,6 +138,7 @@ for j in js:
         url = urls['device_download'].replace('{file}', j['file_path'])
         print url
         download_file_with_token(url, headers, file_path)
+
 
 def clean_output_folder():
     ## Clean output image folder
@@ -179,7 +186,7 @@ for index, file_name in enumerate(file_list):
         print output_file
         shutil.copy2(input_file, output_file)
 
-# Run FEH with following parameters
+    # Run FEH with following parameters
     # -Y (hide pointer) -x (borderless window) -q (quiet no error reporting)
     # -D 2 (delay 2 sec) -R 10 (reload in 10 sec) -S filename (sort by filename)
     # -B black (black background) -F (fullscreen) -Z (auto zoom) -r (recursive)

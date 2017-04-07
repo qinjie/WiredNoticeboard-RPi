@@ -3,6 +3,8 @@ import dropbox
 import re
 import utilsRpi
 
+DROPBOX_APP_SECRET = 'sTelSxtdJdIAAAAAAAJIX6Jcqwq6XhoSUTR43OmNxPd0LvYceJJWoMCPXM-AIsfq'
+
 # create file
 hostname = utilsRpi.get_hostname()
 filename = utilsRpi.format_filename(hostname) + '.txt'
@@ -18,7 +20,7 @@ with open(source_file, 'wb') as f:
 
 # Create a dropbox object using an API v2 key
 # Pointing to dropbox RaspberryPiMonitor folder
-d = dropbox.Dropbox('sTelSxtdJdIAAAAAAAJIX6Jcqwq6XhoSUTR43OmNxPd0LvYceJJWoMCPXM-AIsfq')
+d = dropbox.Dropbox(DROPBOX_APP_SECRET)
 target_file = '/ip/' + filename
 
 # open the file and upload it
