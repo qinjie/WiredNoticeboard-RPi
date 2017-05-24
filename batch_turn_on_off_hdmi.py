@@ -1,15 +1,7 @@
-import requests
-import json
-import os
-import datetime
-import time
-import os
-import utilsWand
-import utilsOther
-import shutil
-import json
 import ConfigParser
-import requests
+import datetime
+import json
+import os
 
 
 def read_config(filepath):
@@ -55,18 +47,25 @@ if __name__ == '__main__':
         print "No turn_on_time and turn_off_time setting found."
         exit(1)
 
-    cur_time = datetime.datetime.now()
-    min_time = cur_time - datetime.timedelta(minutes=5)
-    max_time = cur_time + datetime.timedelta(minutes=5)
+    turn_on_time = datetime.datetime.strptime(config_json['turn_on_time'], "%H:%M:%S").time()
+    turn_on_date_time = datetime.datetime.combine(datetime.datetime.today(), turn_on_time)
 
-    if config_json['turn_on_time']:
-        turn_on_time = datetime.datetime.strptime(config_json['turn_on_time'], "%H:%M:%S").time()
-        turn_on_date_time = datetime.datetime.combine(datetime.datetime.today(), turn_on_time)
-        if ((turn_on_date_time > min_time) and (turn_on_date_time < max_time)):
+    turn_off_time = datetime.datetime.strptime(config_json['turn_off_time'], "%H:%M:%S").time()
+    turn_off_date_time = datetime.datetime.combine(datetime.datetime.today(), turn_off_time)
+
+    cur_time = datetime.datetime.time(datetime.datetime.now())
+
+    print "Current Time: {}".format(cur_time)
+    print "ON Time: {}".format(turn_on_time)
+    print "OFF Time: {}".format(turn_off_time)
+
+    if turn_on_time < turn_off_time:
+        if cur_time < turn_on_time or cur_time > turn_off_time:
+            turn_off_hdmi()
+        elif cur_time > turn_on_time and cur_time < turn_off_time:
             turn_on_hdmi()
-
-    if config_json['turn_off_time']:
-        turn_off_time = datetime.datetime.strptime(config_json['turn_off_time'], "%H:%M:%S").time()
-        turn_off_date_time = datetime.datetime.combine(datetime.datetime.today(), turn_off_time)
-        if ((turn_off_date_time > min_time) and (turn_off_date_time < max_time)):
+    elif turn_on_time > turn_off_time:
+        if cur_time < turn_off_time or cur_time > turn_on_time:
+            turn_on_hdmi()
+        elif cur_time > turn_off_time and cur_time < turn_on_time:
             turn_off_hdmi()

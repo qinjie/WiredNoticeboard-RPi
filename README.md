@@ -52,7 +52,6 @@ e.g. Python packages, wifi setup, power saving config
 5. Play video files
 
 
-
 # Technical Knowledge
 
 ## How to programmatically turn on and off monitor
