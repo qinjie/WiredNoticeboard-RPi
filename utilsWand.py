@@ -16,6 +16,7 @@ def pdf_to_png(input_file_path, output_dir_path, resolution=150):
     if not os.path.isfile(input_file_path) or not input_file_path.endswith('.pdf'):
         print "Invalid input file {}".format(input_file_path)
         return
+
     # Create output foldre if not exists
     if not os.path.exists(output_dir_path):
         try:
@@ -23,26 +24,24 @@ def pdf_to_png(input_file_path, output_dir_path, resolution=150):
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
+
     print "Exporting PDF file to PNG images..."
 
     all_pages = Image(filename=input_file_path, resolution=resolution)
-    with open('file_list.txt', 'w'):
-        pass
-    file = open('file_list.txt', 'w')
+    print all_pages.size
     for i, page in enumerate(all_pages.sequence):
+        image_filename = os.path.splitext(os.path.basename(input_file_path))[0]
+        image_filename = '{0}-{1:04}.png'.format(image_filename, i)
+        image_filename = os.path.join(output_dir_path, image_filename)
+        print 'page {} = {}'.format(i, image_filename)
+
         with Image(page, resolution=200) as img:
             img.compression_quality = 99
             img.format = 'png'
             img.background_color = Color('white')
             img.alpha_channel = 'remove'
-
-            image_filename = os.path.splitext(os.path.basename(input_file_path))[0]
-            image_filename = '{0}-{1:04}.png'.format(image_filename, i)
-            image_filename = os.path.join(output_dir_path, image_filename)
-
             img.save(filename=image_filename)
-            file.write(image_filename + "\n")
-    file.close()
+
 
 if __name__ == "__main__" :
     dn = os.path.dirname(os.path.realpath(__file__))

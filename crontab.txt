@@ -1,0 +1,40 @@
+# Edit this file to introduce tasks to be run by cron.
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').# 
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+
+#### IMPORTANT!
+# This crontab job can only be setup on "crontab -e", NOT "sudo crontab -e"
+
+# Reboot at 6am
+0 6 * * * /sbin/shutdown -r +5
+
+# Update IP address after reboot and every hour at 30 minute
+@reboot (sleep 1m; cd /home/pi/project/ || exit 1; /usr/bin/python /home/pi/project/batch_update_ip_to_dropbox.py &)
+30 * * * * (cd /home/pi/project/ || exit 1; /usr/bin/python /home/pi/project/batch_update_ip_to_dropbox.py &)
+
+# Fetch media files from server 1 minutes after reboot
+@reboot (sleep 1m; cd /home/pi/project/ || exit 1; /usr/bin/python /home/pi/project/batch_prepare_playlist.py &)
+
+# Play media files 2 minutes after reboot. The script runs in foreground
+@reboot sleep 4m; env DISPLAY=:0 lxterminal -e "/bin/bash -c '/usr/bin/python /home/pi/project/batch_main.py'"
+
+### Turn on/off the monitor every weekday morning
+*/5 * * * * (cd /home/pi/project/ || exit 1; /usr/bin/python /home/pi/project/batch_turn_on_off_hdmi.py &)
+
